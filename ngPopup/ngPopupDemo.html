@@ -1,0 +1,38 @@
+
+<div style="margin-left: 10%;">
+    <div class="pointerArea" ng-click="myDialog.open({top:$event.clientY+5, left: $event.clientX+5})">Click This Area!</div>
+    <ng-pop-up option="config" style="z-index: 99;"></ng-pop-up>
+    <img src="ngPopup/logo.png" style="margin-top: 1.5%;"><br>
+    <span style="margin-top: 5%;">Position Top</span> <input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="number" ng-model="config.position.top">
+    <span style="margin-top: 1%;">Position Left</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="number" ng-model="config.position.left">
+    <span style="margin-top: 1%;">Set title</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" ng-model="config.title">
+    <span style="margin-top: 1%;">Show / Off</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="checkbox" ng-model="config.isShow">
+    <span style="margin-top: 1%;">Draggable</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="checkbox" ng-model="config.draggable">
+    <span style="margin-top: 1%;">Resizable</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="checkbox" ng-model="config.resizable">
+    <span style="margin-top: 1%;">Title Bar Visible</span><input class="form-control" style="width:150px;padding: 2px;height:25px;margin-top: 10px;" type="checkbox" ng-model="config.hasTitleBar">
+    <button class="btn btn-primary btn-sm" style="margin:1% 0 0 -1%;"ng-click="myDialog.open(windowCenter)">Open on Center</button>
+    <button class="btn btn-primary btn-sm" style="margin:1% 1% 0 0;"ng-click="myDialog.close()">Close</button>
+    <slider floor="100" ceiling="1000" step="1" precision="1" ng-model="config.width" style="position:absolute;top:6%;left:32%;width:30%;"></slider>
+    <slider floor="100" ceiling="1000" step="1" precision="1" ng-model="config.height" style="position:absolute;top:80%;left:32%;width:30%;"></slider>
+    <div style="width:250px;height:200px;overflow-y: auto;border:1px solid #f5f5f5;position: relative;margin-top:1%;left:-2%;">
+        <ul style='list-style:none;padding-left:0;color: grey;font-family: consolas, "courier new", monospace;'>
+            <li ng-repeat="item in eventArray" ng-style="{backgroundColor: $even ? 'skyblue' : 'smokewhite'}">{{item.title}}</li>
+        </ul>
+    </div>
+    <button class="btn btn-primary btn-sm" style="margin:1%;margin-top: 1%;"ng-click="eventArray.length = 0">Clear Event Box</button><br>
+
+
+    <style scoped>
+        .pointerArea{
+            cursor:pointer;position:absolute;top: 25%;left:70%;width:350px;height:350px;border: 1px solid #f5f5f5;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .pointerArea:hover{
+            background-color: #f5f5f5;
+        }
+    </style>
+
+
+</div>
+
