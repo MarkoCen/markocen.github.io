@@ -14,6 +14,10 @@ markocen.config(['$routeProvider',
                 templateUrl: 'ngPopup/ngPopupDemo.html',
                 controller: 'ngPopupCtrl'
             }).
+            when('/colorful-buttons', {
+                templateUrl: 'colorful-buttons/demo.html',
+                controller: 'colorBtnCtrl'
+            }).
             otherwise({
                 redirectTo: '/angularEndlessScrollBar'
             });
