@@ -26,6 +26,6 @@ markocen.controller('colorBtnCtrl', function($scope,$location){
     })
 
     $scope.openUrl = function(){
-        $location.path('https://github.com/MarkoCen/colorful-buttons')
+        window.open('https://github.com/MarkoCen/colorful-buttons')
     }
 })
