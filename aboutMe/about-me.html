@@ -1,0 +1,43 @@
+<div class="nav-left-bar">
+    <div class="container">
+        <img src="aboutMe/avatar.jpg" class="avatar" title="Last time visited Hover Dam">
+        <div class="cb-btn cb-blue" title="About my world" ng-click="showAboutMe()"><i class="fa fa-user fa-lg"></i></div>
+        <div class="cb-btn cb-blue" title="What I thought..." ng-click="showBlog()"><i class="fa fa-book fa-lg"></i></div>
+        <div class="cb-btn cb-blue" title="My projects" ng-click="jumpToGithub()"><i class="fa fa-github fa-2x"></i></div>
+        <div class="cb-btn cb-blue" title="View me on Linkedin" ng-click="jumpToLinkedin()"><i class="fa fa-linkedin fa-lg"></i></div>
+    </div>
+</div>
+
+<div class="right-content">
+    <div class="about" ng-show="blogHide">
+        <div class="about-pic"><img src="aboutMe/me.png"></div>
+        Hi! I'm Marko, born in Beijing, now live in Boston. Currently, my work is to build a cross-browser single page application which can help enterprises to discover, manage and troubleshoot their IT network. <br><br><br><br><br>
+        <div class="about-pic"><img src="aboutMe/javascript.png"></div>
+        I'm a javaScript enthusiast, javaScript not just a script language only run on browser, with the out-of-browser javaScript technologies, I believe every high quality web application could be built in a pure javaScript environment.
+        Now I heavily use AngularJS and NodeJS in daily work, they are the two most precious javaScript platform I ever met. You could check my skill set at the bottom of this page.<br><br><br>
+
+        <div class="about-pic"><img src="aboutMe/yuting.png"><img src="aboutMe/cary.png"></div>
+        Most of my spare time are spent with Yuting and Cary, they can always bring me warm and happy. My habits including video game, rock music, soccer and any cool stuff.<br><br><br><br>
+
+        <div class="skill">
+            Here is my skill set:<br><br>
+            &nbsp;&nbsp;&nbsp;Front-end frameworks: Angular, Backbone(before I met angular)<br>
+            &nbsp;&nbsp;&nbsp;javaScript tools: jQuery, underscore, jQuery UI, GoJs<br>
+            &nbsp;&nbsp;&nbsp;CSS & HTML: Bootstrap, Semantic UI<br>
+            &nbsp;&nbsp;&nbsp;Server side: Node, Express<br>
+            &nbsp;&nbsp;&nbsp;Build tool: Grunt.js<br>
+            &nbsp;&nbsp;&nbsp;Package manage tools: NPM, Bower<br>
+            &nbsp;&nbsp;&nbsp;Testing: Jasmine<br>
+            &nbsp;&nbsp;&nbsp;Database: MongoDB, MongoSkin, Mongoose<br><br>
+            &nbsp;&nbsp;&nbsp;I also knew some C# and SQL, but they are barely used since nodejs and mongodb came in.
+        </div>
+
+    </div>
+
+    <div class="blogs" ng-show="!blogHide">
+        <div style="text-align: center;">
+            <img  style="border-radius: 20%;width:15em;height:15em;"src="aboutMe/carySleep.jpg"><br><br><br>
+            Coming Soon...
+        </div>
+    </div>
+</div>

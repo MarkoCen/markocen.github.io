@@ -11,26 +11,33 @@
       ga('create', 'UA-59894162-1', 'auto');
       ga('send', 'pageview');
     </script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular-route.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.js"></script>
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+
+    <script src="ngPopup/angular-slider.js"></script>
+    <script src="angularEndlessScrollBar/angularEndlessScrollbar.js"></script>
+    <script type="text/javascript" src="ngPopup/ngPopup.js"></script>
+
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="colorful-buttons/colorful-buttons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="ngPopup/ngPopupStyle.css">
     <link rel="stylesheet" href="ngPopup/angular-slider.css">
-    <script src="ngPopup/angular-slider.js"></script>
+    <link rel="stylesheet" href="aboutMe/aboutMeStyle.css">
 </head>
 <body ng-app="markocen">
-<div ng-view></div>
-<script src="app.js"></script>
 
-<script type="text/javascript" src="ngPopup/ngPopup.js"></script>
+    <div ng-view style="width:100%;"></div>
 
-<script src="angularEndlessScrollBar/angularEndlessCtrl.js"></script>
-<script src="angularEndlessScrollBar/angularEndlessScrollbar.js"></script>
-<script src="ngPopup/ngPopupCtrl.js"></script>
-<script src="colorful-buttons/colorBtnCtrl.js"></script>
+    <script src="app.js"></script>
+
+    <script src="angularEndlessScrollBar/angularEndlessCtrl.js"></script>
+    <script src="ngPopup/ngPopupCtrl.js"></script>
+    <script src="colorful-buttons/colorBtnCtrl.js"></script>
+    <script src="aboutMe/aboutMeCtrl.js"></script>
+
 </body>
 </html>

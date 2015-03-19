@@ -18,7 +18,11 @@ markocen.config(['$routeProvider',
                 templateUrl: 'colorful-buttons/demo.html',
                 controller: 'colorBtnCtrl'
             }).
+            when('/about-me', {
+                templateUrl: 'aboutMe/about-me.html',
+                controller: 'aboutMeCtrl'
+            }).
             otherwise({
-                redirectTo: '/angularEndlessScrollBar'
+                redirectTo: '/about-me'
             });
     }]);
