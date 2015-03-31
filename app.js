@@ -1,7 +1,7 @@
 /**
  * Created by Marko on 2/17/2015.
  */
-var markocen = angular.module('markocen', ['angularEndlessScrollBar','ngRoute','uiSlider','ngPopup']);
+var markocen = angular.module('markocen', ['angularEndlessScrollBar','ngRoute','uiSlider','ngPopup','angularUtils.directives.dirDisqus']);
 
 markocen.config(['$routeProvider','$locationProvider',function($routeProvider, $locationProvider) {
     $routeProvider.
