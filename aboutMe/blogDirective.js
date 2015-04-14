@@ -18,6 +18,7 @@ markocen.directive('blog', function($compile, $q, $http, $route){
             scope.disqusIdentifier = "";
 
             var refreshDisqus = function (id, title) {
+                scope.disqusUrl = "http://markocen.github.io/#/about-me/"+id+"/";
                 scope.disqusIdentifier = title;
                 scope.disqusShow = true;
             };
