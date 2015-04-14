@@ -1,0 +1,19 @@
+<div class="blog-container">
+    <div class="blog-title">
+        {{blogTitle}}
+    </div>
+
+    <div class="blog-date">{{blogDate}}</div>
+
+    <div class="blog-content"></div>
+
+    <div class="blog-nav">
+        <div class="cb-btn cb-red" ng-show="index > 0 && blogLength > 1" ng-click="nextBlog(index-1)"><i class="fa fa-mail-reply fa-lg"></i></div>
+        <div class="cb-btn cb-red"><i class="fa fa-bookmark fa-lg"></i></div>
+        <div class="cb-btn cb-red" ng-show="index < blogLength - 1 && blogLength > 1" ng-click="nextBlog(index+1)"><i class="fa fa-mail-forward fa-lg"></i></div>
+    </div>
+</div>
+
+<dir-disqus disqus-shortname="markocen" disqus-url="disqusUrl" disqus-identifier="disqusIdentifier" disqus-title="disqusIdentifier" ready-to-bind="disqusShow"></dir-disqus>
+
+
