@@ -17,18 +17,18 @@ markocen.config(['$routeProvider','$locationProvider',function($routeProvider, $
             templateUrl: 'colorful-buttons/demo.html',
             controller: 'colorBtnCtrl'
         }).
-        when(':name?/', {
+        when('/about-me/:name?', {
             templateUrl: 'aboutMe/about-me.html',
             controller: 'aboutMeCtrl'
         }).
         otherwise({
-            redirectTo: ':name?/'
+            redirectTo: '/about-me'
         });
 
-    //$locationProvider.html5Mode({
-    //    enabled: true
-    //    //requireBase: false
-    //})
+    $locationProvider.html5Mode({
+        enabled: true
+        //requireBase: false
+    })
 
-    $locationProvider.hashPrefix('!')
+    //$locationProvider.hashPrefix('!')
 }]);
