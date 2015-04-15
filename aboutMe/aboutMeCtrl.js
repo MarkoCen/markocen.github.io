@@ -1,4 +1,4 @@
-markocen.controller("aboutMeCtrl", function($scope,$route,$http){
+markocen.controller("aboutMeCtrl", function($scope,$http){
     $scope.blogHide = true;
     
     $scope.jumpToLinkedin = function(){
