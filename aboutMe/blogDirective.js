@@ -1,4 +1,4 @@
-markocen.directive('blog', function($compile, $q, $http, $route){
+markocen.directive('blog', function($compile, $q, $http, $window, $location){
     return {
         restrict: "E",
         scope: {
@@ -13,15 +13,8 @@ markocen.directive('blog', function($compile, $q, $http, $route){
             scope.blogContent = "";
             scope.index = 0;
             scope.blogLength = 0;
-            scope.disqusShow = false;
-            scope.disqusUrl = "";
-            scope.disqusIdentifier = "";
-
-            var refreshDisqus = function (id, title) {
-                scope.disqusUrl = "http://markocen.github.io/#/about-me/"+id+"/";
-                scope.disqusIdentifier = title;
-                scope.disqusShow = true;
-            };
+            scope.disqusShortname = "markocen";
+            scope.baseUrl = $location.absUrl();
 
             var refreshBlog = function(title, date, content){
                 scope.blogTitle = title;
@@ -44,6 +37,29 @@ markocen.directive('blog', function($compile, $q, $http, $route){
                 });
 
                 return deferred.promise;
+            };
+
+            var refreshDisqus = function(id, title){
+                var url = scope.baseUrl +"/"+id;
+                $window.disqus_shortname = 'markocen';
+                $window.disqus_identifier = id;
+                $window.disqus_title = title;
+                $window.disqus_url = url;
+
+                if (!$window.DISQUS) {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + scope.disqusShortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                } else {
+                    $window.DISQUS.reset({
+                        reload: true,
+                        config: function () {
+                            this.page.identifier = id;
+                            this.page.url = url;
+                            this.page.title = title;
+                        }
+                    });
+                }
             };
 
             scope.nextBlog = function (newIndex) {

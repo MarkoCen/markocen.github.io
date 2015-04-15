@@ -1,7 +1,7 @@
 /**
  * Created by Marko on 2/17/2015.
  */
-var markocen = angular.module('markocen', ['angularEndlessScrollBar','ngRoute','uiSlider','ngPopup','angularUtils.directives.dirDisqus']);
+var markocen = angular.module('markocen', ['angularEndlessScrollBar','ngRoute','uiSlider','ngPopup']);
 
 markocen.config(['$routeProvider','$locationProvider',function($routeProvider, $locationProvider) {
     $routeProvider.
@@ -25,10 +25,7 @@ markocen.config(['$routeProvider','$locationProvider',function($routeProvider, $
             redirectTo: '/about-me'
         });
 
-    $locationProvider.html5Mode({
-        enabled: true
-        //requireBase: false
-    })
+    $locationProvider.html5Mode(true);
 
     //$locationProvider.hashPrefix('!')
 }]);
