@@ -13,7 +13,7 @@ markocen.directive('blog', function($compile, $q, $http, $window, $location){
             scope.blogContent = "";
             scope.index = 0;
             scope.blogLength = 0;
-            scope.disqusShortname = "markocen";
+            scope.disqusShortname = "markocenBlog";
             scope.baseUrl = $location.absUrl();
 
             var refreshBlog = function(title, date, content){
@@ -41,7 +41,7 @@ markocen.directive('blog', function($compile, $q, $http, $window, $location){
 
             var refreshDisqus = function(id, title){
                 var url = "http://markocen.github.io/about-me/"+id;
-                $window.disqus_shortname = 'markocen';
+                $window.disqus_shortname = scope.disqusShortname;
                 $window.disqus_identifier = id;
                 $window.disqus_title = title;
                 $window.disqus_url = url;
