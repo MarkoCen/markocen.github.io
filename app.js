@@ -11,7 +11,7 @@ markocen.config(['$routeProvider','$locationProvider',function($routeProvider, $
         }).
         when('/ngPopup', {
             templateUrl: 'ngPopup/ngPopupDemo.html',
-            controller: 'ngPopupCtrl'
+            controller: 'demoCtrl'
         }).
         when('/colorful-buttons', {
             templateUrl: 'colorful-buttons/demo.html',
