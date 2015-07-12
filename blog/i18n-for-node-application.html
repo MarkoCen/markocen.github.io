@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>i18n Implementation For Node Application</title>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -11,6 +11,20 @@
         ga('create', 'UA-59894162-1', 'auto');
         ga('send', 'pageview');
     </script>
+    <script type="text/javascript">
+
+        var disqus_shortname = 'markocenBlog';
+        var disqus_identifier = '/i18n-for-node-application';
+        var disqus_url = 'http://markocen.github.com/blog/i18n-for-node-application.html';
+        var disqus_title = "i18n Implementation For Node Application";
+        
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
@@ -42,16 +56,229 @@
         </div>
         <div class="row">
             <div class="col-md-12 blog-context" >
-                <h4 class="blog-title">i18n for nodejs application</h4>
+                <h4 class="blog-title">i18n Implementation For Node Application</h4>
                 <h6 class="blog-sub-title">Posted on July 11, 2015, by markocen</h6>
                 <div class="blog-content" style="color:inherit;">
 
                     <blockquote>
-                        <p>Nowadays, more and more websites support two or more languages. More languages supporting simply means more customers your website would, i18n (internationalization) is a solution to localize a web application into different languages and cultures, this is not simple process especially you have a large web application.  </p>
+                        <p>Nowadays, more and more websites support two or more languages. More languages supporting simply means more customers your website would. i18n (internationalization) is a solution to localize a web application into different languages and cultures, this is not simple process especially you have a large web application.  </p>
 
                         <p>However, if you are using nodejs, thanks to many open-source i18n node middleware, you can deploy i18n solution without too much pain. This blog provides a simple demo to show how to build a multi-language website by using node and its i18n module.</p>
                     </blockquote>
+
+
+
+                    <h4 id="a-simple-website-with-multi-language-supported"><strong>A Simple Website with Multi-language Supported</strong></h4>
+
+                    <p>In this demo, we would build a simple website with <a href="http://expressjs.com/">express</a> and <a href="http://jade-lang.com/">jade</a>. It has two languages supported (English and Chinese). In main page, user can choose the language options, and after choosing, we would like to keep the user option into cookie, therefore, we can use it for the rest of pages. The file structure is:</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs ">i18n_demo
+    |-- locales <span class="hljs-comment">/* Used to store language json files*/</span>
+    |     |--en.json
+    |     |--zh.json
+    |-- views
+    |     |-- main.jade
+    |     |-- contact.jade
+    |-- node_modules
+    |-- package.json
+    |-- server.js </code></pre>
+
+                    <h4 id="modules-dependency"><strong>Modules Dependency</strong></h4>
+
+                    <p><a href="https://github.com/mashpie/i18n-node">i18n</a> :  a light-weight i18n translation module for nodejs. It supports dynamic json storage and different node template engine. <br>
+                        <a href="http://expressjs.com/">express</a> :  a popuplar framework for nodejs. Using a framework is optional, we can just build this demo by plain nodejs. <br>
+                        <a href="https://github.com/expressjs/session">express-session</a> : we need to use session to store user language option. <br>
+                        <a href="https://github.com/expressjs/cookie-parser">cookie-parser</a> : use cookie-parser to edit cookie object in user session.</p>
+
+                    <p>The completed Package.json file:</p>
+
+<pre class="prettyprint"><code class="language-json hljs ">{
+    "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"i18n_demo"</span></span>,
+    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0"</span></span>,
+    "<span class="hljs-attribute">main</span>": <span class="hljs-value"><span class="hljs-string">"server.js"</span></span>,
+    "<span class="hljs-attribute">author</span>": <span class="hljs-value"><span class="hljs-string">"Marko Cen"</span></span>,
+    "<span class="hljs-attribute">license</span>": <span class="hljs-value"><span class="hljs-string">"MIT"</span></span>,
+    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">cookie-parser</span>": <span class="hljs-value"><span class="hljs-string">"^1.3.5"</span></span>,
+    "<span class="hljs-attribute">express</span>": <span class="hljs-value"><span class="hljs-string">"^4.13.1"</span></span>,
+    "<span class="hljs-attribute">express-session</span>": <span class="hljs-value"><span class="hljs-string">"^1.11.3"</span></span>,
+    "<span class="hljs-attribute">i18n</span>": <span class="hljs-value"><span class="hljs-string">"^0.5.0"</span></span>,
+    "<span class="hljs-attribute">jade</span>": <span class="hljs-value"><span class="hljs-string">"^1.11.0"</span>
+  </span>}
+</span>}</code></pre>
+
+                    <h4 id="app-configuration"><strong>App Configuration</strong></h4>
+
+                    <p>First, letâ€™s setup our server side code:</p>
+
+                    <ol>
+                        <li><p>we would create a express app and listen on port 8080</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+    <span class="hljs-keyword">var</span> app = express();
+
+    app.listen(<span class="hljs-number">8080</span>);</code></pre></li>
+                        <li><p>In order to use jade, we need to set app view engine to jade</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs ">app.set(<span class="hljs-string">'view engine'</span>, <span class="hljs-string">'jade'</span>);
+</code></pre></li>
+                        <li><p>Now, let's mount our session middleware and cookie-parser middleware. Please be aware, they need to use same secret string</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> session = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express-session'</span>);
+<span class="hljs-keyword">var</span> cookieParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cookie-parser'</span>);
+
+app.use(cookieParser(<span class="hljs-string">"i18n_demo"</span>));
+
+app.use(session({
+    secret: <span class="hljs-string">"i18n_demo"</span>,
+    resave: <span class="hljs-literal">true</span>,
+    saveUninitialized: <span class="hljs-literal">true</span>,
+    cookie: { maxAge: <span class="hljs-number">60000</span> }
+}));</code></pre></li>
+                        <li><p>Config i18n and mount it to our app. Here, the mounting order between i18n and cookieParser is important, we always want i18n mounted <strong>after</strong> cookieParser</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> i18n = <span class="hljs-built_in">require</span>(<span class="hljs-string">'i18n'</span>);
+
+i18n.configure({
+
+<span class="hljs-comment">//define how many languages we would support in our application</span>
+locales:[<span class="hljs-string">'en'</span>, <span class="hljs-string">'zh'</span>],
+
+<span class="hljs-comment">//define the path to language json files, default is /locales</span>
+directory: __dirname + <span class="hljs-string">'/locales'</span>,
+
+<span class="hljs-comment">//define the default language</span>
+defaultLocale: <span class="hljs-string">'en'</span>,
+
+<span class="hljs-comment">// define a custom cookie name to parse locale settings from </span>
+cookie: <span class="hljs-string">'i18n'</span>
+});
+
+app.use(cookieParser(<span class="hljs-string">"i18n_demo"</span>));
+
+app.use(session({
+    secret: <span class="hljs-string">"i18n_demo"</span>,
+    resave: <span class="hljs-literal">true</span>,
+    saveUninitialized: <span class="hljs-literal">true</span>,
+    cookie: { maxAge: <span class="hljs-number">60000</span> }
+}));
+
+<span class="hljs-comment">//init i18n after cookie-parser</span>
+app.use(i18n.init);</code></pre></li>
+                        <li><p>Finally, add language json files in locales folder. Since we provide two languages: English and Chinese, we should add two json files:<code>en.json</code> and <code>zh.json</code></p></li>
+                    </ol>
+
+                    <h4 id="views"><strong>Views</strong></h4>
+
+                    <p>In this application, we only have two views, <code>main.jade</code> and <code>contact.jade</code>, In <code>main.jade</code>, we would allow user to choose their language, and in <code>contact.jade</code> we would show some information in the language user just choose.</p>
+
+
+
+<pre class="prettyprint"><code class="language-jade hljs scss"><span class="hljs-comment">//main.jade</span>
+
+    doctype <span class="hljs-tag">html</span>
+
+    <span class="hljs-function">html(lang=<span class="hljs-string">'en'</span>)</span>
+        <span class="hljs-tag">head</span>
+            <span class="hljs-tag">title</span> i18n Demo
+            <span class="hljs-function">meta(charset=<span class="hljs-string">"utf-8"</span>)</span>
+        <span class="hljs-tag">body</span>
+
+            <span class="hljs-tag">p</span> #{i18n<span class="hljs-class">.__</span>("Welcome")}
+
+            <span class="hljs-tag">p</span>
+                <span class="hljs-function">a(href=<span class="hljs-string">"/contact"</span>)</span> Contact Information
+
+            <span class="hljs-tag">p</span> #{i18n<span class="hljs-class">.__</span>("Language")}
+
+            <span class="hljs-tag">p</span>
+                <span class="hljs-tag">ul</span>
+                    <span class="hljs-tag">li</span>
+                        <span class="hljs-function">a(href=<span class="hljs-string">"/zh"</span>)</span> Chinese
+                    <span class="hljs-tag">li</span>
+                        <span class="hljs-function">a(href=<span class="hljs-string">"/en"</span>)</span> English</code></pre>
+
+
+
+<pre class="prettyprint"><code class="language-jade hljs d"><span class="hljs-comment">//contact.jade</span>
+
+    doctype html
+        html
+            head
+                title Contact
+                meta(charset=<span class="hljs-string">"utf-8"</span>)
+        body
+            p #{i18n.__(<span class="hljs-string">"Contact Information"</span>)}</code></pre>
+
+                    <p>Notice the <code>i18n.__</code> function, it would load string from different language json files base on the language user choose, and insert it into paragraph tag</p>
+
+                    <h4 id="routes"><strong>Routes</strong></h4>
+
+                    <p>The last step is to setup the routes, we have four routes:</p>
+
+                    <ul>
+                        <li><code>/</code>                  get main page</li>
+                        <li><code>/contact</code>    get contact page</li>
+                        <li><code>/en</code> change language to English</li>
+                        <li><code>/ch</code> change language to Chinese</li>
+                    </ul>
+
+
+
+<pre class="prettyprint"><code class="language-javascript hljs ">app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+    res.setLocale(req.cookies.i18n);
+    res.render(<span class="hljs-string">'main'</span>, {
+    i18n: res
+    })
+});
+
+app.get(<span class="hljs-string">'/contact'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+    res.render(<span class="hljs-string">'contact'</span>, {
+    i18n: res
+    })
+});
+
+app.get(<span class="hljs-string">'/zh'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+    res.cookie(<span class="hljs-string">'i18n'</span>, <span class="hljs-string">'zh'</span>);
+    res.redirect(<span class="hljs-string">'/'</span>)
+});
+
+app.get(<span class="hljs-string">'/en'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(req, res)</span> {</span>
+    res.cookie(<span class="hljs-string">'i18n'</span>, <span class="hljs-string">'en'</span>);
+    res.redirect(<span class="hljs-string">'/'</span>)
+});</code></pre>
+
+                    <p>In <code>/zh</code> and <code>/en</code> routes, we use cookie-parser to set <code>i18n</code> field to related language value, then in <code>/</code> route, we use <code>res.setLocale</code> function which provided by i18n middleware to dynamic set the language our site used. When rendering the template, we pass response object as a option data into the template, therefore, we can use <code>res.__</code> function in our template</p>
+
+
+
+                    <h4 id="json-files"><strong>JSON Files</strong></h4>
+
+                    <p>Till now, everything is hooked up, and the last but most important thing is editing our json file:</p>
+
+<pre class="prettyprint"><code class="language-json hljs ">//en.json
+
+{
+    "<span class="hljs-attribute">Welcome</span>": <span class="hljs-value"><span class="hljs-string">"Hi, welcome to our site"</span></span>,
+    "<span class="hljs-attribute">Language</span>": <span class="hljs-value"><span class="hljs-string">"Please choose your language"</span></span>,
+    "<span class="hljs-attribute">Contact Information</span>" : <span class="hljs-value"><span class="hljs-string">"1 Elf rd, Unicorn Village, Wonderland, Earth"</span>
+</span>}</code></pre>
+
+<pre class="prettyprint"><code class="language-json hljs ">//zh.json
+
+{
+    "<span class="hljs-attribute">Welcome</span>": <span class="hljs-value"><span class="hljs-string">"欢迎"</span></span>,
+    "<span class="hljs-attribute">Language</span>": <span class="hljs-value"><span class="hljs-string">"请选择语言"</span></span>,
+    "<span class="hljs-attribute">Contact Information</span>" : <span class="hljs-value"><span class="hljs-string">"一号 精灵路, 独角兽村, 幸福国, 地球"</span>
+</span>}</code></pre>
+
+                    <p>both files should have same fields, and only the field values are different</p>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="disqus_thread"></div>
             </div>
         </div>
     </div>
