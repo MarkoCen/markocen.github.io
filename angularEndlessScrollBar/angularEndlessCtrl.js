@@ -1,7 +1,8 @@
 /**
  * Created by Marko on 2/17/2015.
  */
-markocen.controller("angularEndlessDemoCtrl", function($scope, $http, $timeout){
+
+angular.module('angularEndless', ['angularEndlessScrollBar']).controller("angularEndlessDemoCtrl", function($scope, $http, $timeout){
     $scope.contactList = [];
     $scope.contactListHori = [];
     $scope.JsonLoading = false;

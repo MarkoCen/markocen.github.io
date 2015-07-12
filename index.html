@@ -1,42 +1,88 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <base href="/">
-    <meta charset="UTF-8">
-    <title></title>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-59894162-1', 'auto');
-      ga('send', 'pageview');
-    </script>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title></title>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+          ga('create', 'UA-59894162-1', 'auto');
+          ga('send', 'pageview');
+        </script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular-route.js"></script>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./index.css">
 
-    <script src="angularEndlessScrollBar/angularEndlessScrollbar.js"></script>
-    <script src="https://cdn.rawgit.com/MarkoCen/ngPopup/master/dist/ngPopup.js" type="text/javascript"></script>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="colorful-buttons/colorful-buttons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.rawgit.com/MarkoCen/ngPopup/master/dist/ngPopup.css">
-    <link rel="stylesheet" href="aboutMe/aboutMeStyle.css">
-    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-</head>
-<body ng-app="markocen">
+    </head>
+    <body style="background-color: #ECECEA;">
 
-    <div ng-view style="width:100%;"></div>
 
-    <script src="app.js"></script>
+        <div>
+            <div class="container">
+                <div class="row">
+                    <header class="col-md-12 header">
+                            <p>
+                            <h1>Hi, I am Marko Cen</h1>
+                            </p>
+                            <p>
+                                <a class="btn btn-default" href="http://markocen.github.io/index.html">About me</a>
+                                <a class="btn btn-default" href="http://markocen.github.io/blog.html">Blog</a>
+                                <a class="btn btn-default" href="http://markocen.github.io/projects.html">Project</a>
+                                <a class="btn btn-default" href="http://markocen.github.io/contacts.html">Contacts</a>
+                            </p>
+                    </header>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <section>
+                            Hi! I'm Marko, born in Beijing, now live in Boston.
+                            Currently, my work is to build a cross-browser single page application which can help enterprises to discover, manage and troubleshoot their IT network.
+                        </section><br>
 
-    <script src="angularEndlessScrollBar/angularEndlessCtrl.js"></script>
-    <script src="ngPopup/ngPopupCtrl.js"></script>
-    <script src="colorful-buttons/colorBtnCtrl.js"></script>
-    <script src="aboutMe/aboutMeCtrl.js"></script>
-    <script src="aboutMe/blogDirective.js"></script>
-    <script src="aboutMe/gistDirective.js"></script>
-</body>
+                        <section>
+                            I'm a javaScript enthusiast, javaScript not just a script language only run on browser. With the help of out-of-browser javaScript technologies, I believe every high quality web application could be built in a pure javaScript environment.
+                            Now I heavily use AngularJS and NodeJS in my daily routine, and I have couple of part-time projects built on MEAN.
+                            You could check my skills at the bottom of this page.
+                        </section><br>
+
+                        <section>
+                            Most of my spare time are spent with Yuting and Cary, My habits including video game, rock music, soccer and any cool stuff.
+                        </section><br>
+
+                        <section style="text-align: center;">
+                            <img src="aboutMe/avatar.jpg" class="avatar">
+                            <img src="aboutMe/cary.jpg" class="avatar">
+                            <img src="aboutMe/yuting.jpg" class="avatar">
+
+                        </section><br>
+
+                        <section>
+                            Here is my skill set:<br>
+
+                            <ul style="list-style: none;padding-left:0;">
+                                <li><strong>Front-end frameworks</strong>: Angular, React, Backbone</li>
+                                <li><strong>Template engine</strong>: Jade</li>
+                                <li><strong>Front-end tools</strong>: jQuery, underscore, GoJs</li>
+                                <li><strong>CSS & HTML</strong>: Bootstrap, Semantic UI</li>
+                                <li><strong>Server side</strong>: NodeJs, ExpressJs, Socket.io, .Net</li>
+                                <li><strong>Build tools</strong>: Gulp, Grunt</li>
+                                <li><strong>Package manage tools</strong>: NPM, Bower</li>
+                                <li><strong>Testing</strong>: Protractor, Jasmine</li>
+                                <li><strong>Database</strong>: MongoDB, Redis</li>
+                                <li><strong>Version Control</strong>: Git, Mercurial</li>
+                            </ul>
+                        </section><br><br><br><br><br>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

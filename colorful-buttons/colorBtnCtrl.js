@@ -1,7 +1,7 @@
 /**
  * Created by Marko on 3/12/2015.
  */
-markocen.controller('colorBtnCtrl', function($scope,$location){
+angular.module('colorBtn', []).controller('colorBtnCtrl', function($scope,$location){
     $(function () {
         setTimeout(function () {
             $(".cb-green").animate({
@@ -28,4 +28,4 @@ markocen.controller('colorBtnCtrl', function($scope,$location){
     $scope.openUrl = function(){
         window.open('https://github.com/MarkoCen/colorful-buttons')
     }
-})
+});
