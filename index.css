@@ -53,7 +53,7 @@ body{
     cursor: pointer;
 }
 
-.blog-entry .blog-sub-title{
+.blog-sub-title{
     color:darkgray;
     font-style: italic;
 }
