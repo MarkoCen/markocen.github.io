@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="description" content="This blog provides a simple way to customize angular $exceptionHandler by adding more features in it.">
+    <meta name="keywords" content="angular, angular exception, angular exception handling, front-end exception handling, blog, software development, javascript, web development, full stack developer">
+    <title>Customize Angular Exception Handler</title>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-59894162-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="markdown.css">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</head>
+<body style="background-color: #ECECEA;">
+
+
+<div>
+    <div class="container">
+        <div class="row">
+            <header class="col-md-12 header">
+                <p>
+                <h1>Customize Angular Exception Handler</h1>
+                <h6 class="blog-sub-title">Posted on July 18, 2015, by markocen</h6>
+                </p>
+                <p>
+                    <a class="btn btn-default" href="http://markocen.github.io/index.html">About me</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/blog.html">Blog</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/projects.html">Project</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/contacts.html">Contacts</a>
+                </p>
+            </header>
+        </div>
+        <div class="row">
+            <div class="col-md-12 blog-context" >
+                <div class="blog-content" style="color:inherit;">
+
+                    <blockquote>
+                        <p>In Angular, all exceptions would be delegated to exceptionHandler service. By default, exceptionHandler only  log exception to console. However, in production, we may need more features rather than logging. This post demonstrates a simple way to build a rich-feature customized Angular exception service.  </p>
+                    </blockquote>
+
+                    <h4 id="why-rich-feature-error-handler"><strong>Why Rich-feature Error Handler ?</strong></h4>
+
+                    <p>Recently, I am working on a complex rich-client web application which using Angular as its front-end framework. This application contains hundreds of controllers, directives and services. For such a huge application, even you have did thousand times of testing, you can still expect error happened when it is in production. So what we can do when an exception occurred on customer side? We canâ€™t tell a customer to press F12, and check the logs, we need a more friendly way to display that error to our customer, and provide a more convenient way to let customer to handler that error. All cases above make us to build rich-feature error handler.</p>
+
+                    <h4 id="what-a-rich-feature-error-handler-would-do"><strong>What a Rich-feature Error Handler Would Do ?</strong></h4>
+
+                    <p>In this post, we want to build an Angular error handler which has following features :</p>
+
+                    <ul>
+                        <li>Can terminate application running when a fatal exception happened, and popup a alert box to display that error, therefore, user can know the reason why application stopped.</li>
+                        <li>Has an error stack to record all errors.</li>
+                        <li>Can submit an exception information or error stack to server.</li>
+                        <li>Has two modes : debug mode or production mode, in debug mode, every exception would be treat as fatal exception which can stop application running, in production mode, only defined fatal exceptions can stop application running.</li>
+                    </ul>
+
+                    <h4 id="overwrite-default-exceptionhandler"><strong>Overwrite Default $exceptionHandler</strong></h4>
+
+                    <p>First, we want to overwrite Angular <code>$exceptionHandler</code> service by our own service. This will make sure every exception happened in Angular would invoke our service, even no <code>try... catch...</code> added : </p>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-keyword">var</span> demo = angular.module(<span class="hljs-string">'errorHandlingDemo'</span>, []);
+
+demo.factory(<span class="hljs-string">'exceptionSrvc'</span>, [<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+    <span class="hljs-comment">// ... implemented logic</span>
+
+}]);
+
+demo.provider(<span class="hljs-string">'$exceptionHandler'</span>, [<span class="hljs-string">'exceptionSrvc'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(exceptionSrvc)</span>{</span>
+
+    <span class="hljs-keyword">return</span> exceptionSrvc;
+
+}])</code></pre>
+
+                    <p>The overwriting is pretty straightforward: we create a service factory called <code>exceptionSrvc</code>, then we use it as the provider of <code>$exceptionHandler</code> .</p>
+
+                    <h4 id="implement-exception-service"><strong>Implement Exception Service</strong></h4>
+
+                    <p>Till now, we have create our service and use it in <code>$exceptionHandler</code>, the last step is to implement the service :</p>
+
+<pre class="prettyprint"><code class="language-javascript hljs ">demo.factory(<span class="hljs-string">'exceptionSrvc'</span>,
+
+[<span class="hljs-string">'$log'</span>, <span class="hljs-string">'$injector'</span>, <span class="hljs-string">'$http'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($log, $injector, $http)</span>{</span>
+
+    <span class="hljs-comment">// determine if this service in debug mode or production mode</span>
+    <span class="hljs-keyword">var</span> DEBUG_MODE = <span class="hljs-literal">true</span>;
+
+    <span class="hljs-comment">// set all exceptions to fatal default</span>
+    <span class="hljs-keyword">var</span> FATAL_ERROR = <span class="hljs-literal">true</span>;
+
+    <span class="hljs-comment">// store all exceptions</span>
+    <span class="hljs-keyword">var</span> _errorQueue = [];
+
+    <span class="hljs-comment">// this function would insert an alert box on web page which contain </span>
+    <span class="hljs-comment">// error infos</span>
+    <span class="hljs-keyword">var</span> displayException = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ex)</span>{</span>
+
+        <span class="hljs-keyword">var</span> $$rootScope = $injector.get(<span class="hljs-string">'$rootScope'</span>);
+        <span class="hljs-keyword">var</span> $$compile = $injector.get(<span class="hljs-string">'$compile'</span>);
+
+        <span class="hljs-keyword">var</span> dialogHtml = <span class="hljs-string">'&lt;div id="alert-dialog"&gt;'</span> +
+                         <span class="hljs-string">'&lt;p&gt;App stopped due to the following error&lt;/p&gt;'</span>+
+                         <span class="hljs-string">'&lt;p&gt;'</span>+ex.toString() + <span class="hljs-string">'&lt;/p&gt;'</span> +
+                         <span class="hljs-string">'&lt;button ng-click="closeDialog()"&gt;Cancel&lt;/button&gt;'</span> +
+                         <span class="hljs-string">'&lt;button ng-click="submitError()"&gt;Submit&lt;/button&gt;'</span> +
+                         <span class="hljs-string">'&lt;/div&gt;'</span>;
+
+        <span class="hljs-keyword">var</span> scope = $$rootScope.$<span class="hljs-keyword">new</span>();
+
+        scope.closeDialog = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+            angular.element(document.querySelector(<span class="hljs-string">'#alert-dialog'</span>)).remove();
+            scope.$destroy();
+
+        };
+
+        scope.submitError = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+            sendErrorToServer().then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+                scope.closeDialog();
+
+            })
+
+        };
+
+        angular.element(document.body).append($$compile(dialogHtml)(scope));
+
+        <span class="hljs-comment">//throw this exception to upper catch block</span>
+        <span class="hljs-keyword">throw</span> ex;
+    };
+
+    <span class="hljs-comment">// this method would send error stack to a log server</span>
+    <span class="hljs-keyword">var</span> sendErrorToServer = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+        <span class="hljs-keyword">return</span> $http.post(<span class="hljs-string">'your_url'</span>, _errorQueue);
+
+    };
+
+    <span class="hljs-comment">// this method would return an customized exception object</span>
+    <span class="hljs-keyword">var</span> buildErrorObject = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ex, cause, isFatal)</span>{</span>
+        <span class="hljs-keyword">return</span> {
+            errorMessage: ex.toString(),
+            errorObj: ex,
+            errorCause: cause,
+            timestamp: <span class="hljs-built_in">Date</span>.now(),
+            isFatal: isFatal
+        };
+    };
+
+    <span class="hljs-comment">/**
+     * @ex {Object} : Error exception object
+     * @cause {String} : A string describe this exception
+     * @isFatal {Boolean} : determine if this exception is fatal
+     */</span>
+    <span class="hljs-keyword">var</span> exceptionSrvc = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ex, cause, isFatal)</span>{</span>
+
+        <span class="hljs-keyword">var</span> isFatalError = (isFatal === <span class="hljs-literal">undefined</span>) ? FATAL_ERROR : isFatal;
+
+        <span class="hljs-keyword">var</span> errorObject = buildErrorObject(ex, cause, isFatal);
+
+        _errorQueue.push(errorObject);
+
+        <span class="hljs-keyword">if</span>(DEBUG_MODE){
+
+            displayException(ex);
+
+        }<span class="hljs-keyword">else</span>{
+
+            <span class="hljs-keyword">if</span>(isFatalError){
+
+                displayException(ex);
+
+            }<span class="hljs-keyword">else</span>{
+
+                $log.error(errorObject);
+
+            };
+
+        };
+    }
+
+    <span class="hljs-keyword">return</span> exceptionSrvc;
+}]
+
+)</code></pre>
+
+                    <h4 id="manually-delegate-exception"><strong>Manually Delegate Exception</strong></h4>
+
+                    <p>Although <code>$exceptionHandler</code> implement our <code>exceptionSrvc</code>, we still want to handle a exception manually by adding <code>try...catch...</code> in our code :</p>
+
+
+
+<pre class="prettyprint"><code class="language-javascript hljs ">demo.controller(<span class="hljs-string">'userCtrl'</span>,
+    [<span class="hljs-string">'$scope'</span>, <span class="hljs-string">'exceptionSrvc'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($scope, exceptionSrvc)</span>{</span>
+
+        $scope.findUserInfo = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span>
+
+            <span class="hljs-keyword">try</span>{
+
+                <span class="hljs-comment">// ...</span>
+
+            }<span class="hljs-keyword">catch</span>(ex){
+
+                exceptionSrvc(ex, <span class="hljs-string">'something is wrong'</span>, <span class="hljs-literal">true</span>);
+
+            }
+
+        };
+
+    }]
+);</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var disqus_shortname = 'markocenBlog';
+    var disqus_identifier = '/customize-angular-exception-handler';
+    var disqus_url = 'http://markocen.github.com/blog/customize-angular-exception-handler.html';
+    var disqus_title = "Customize Angular Exception Handler";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+</body>
+</html>
