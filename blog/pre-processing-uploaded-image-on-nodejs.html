@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="description" content="This blog showed how to build nodejs middleware to process uploaded images.">
+    <meta name="keywords" content="nodejs, image processing, blog, software development, javascript, web development, full stack developer">
+    <title>Pre-processing Uploaded Images on Nodejs</title>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-59894162-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/paper/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="markdown.css">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</head>
+<body style="background-color: #ECECEA;">
+
+
+<div>
+    <div class="container">
+        <div class="row">
+            <header class="col-md-12 header">
+                <p>
+                <h1>Pre-processing Uploaded Images on Nodejs</h1>
+                <h6 class="blog-sub-title">Posted on Oct 13, 2015, by markocen</h6>
+                </p>
+                <p>
+                    <a class="btn btn-default" href="http://markocen.github.io/index.html">About me</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/blog.html">Blog</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/projects.html">Project</a>
+                    <a class="btn btn-default" href="http://markocen.github.io/contacts.html">Contacts</a>
+                </p>
+            </header>
+        </div>
+        <div class="row">
+            <div class="col-md-12 blog-context" >
+                <div class="blog-content" style="color:inherit;">
+                    <blockquote>
+                        <p>Allowing user upload their images to web server is quick common in modern web app, like changing account avatar, attaching blog pictures or posting image tweets. The images from user side can be difference, they have different qualities, sizes and types. Regarding saving those images directly into our database or filesystem (thinking about saving an 10MB image into database), we mostly like to convert them into our standards first. That is the reason we need server side image pre-processing.</p>
+                    </blockquote>
+
+
+
+                    <h4 id="why-image-pre-processing-really-matters-in-web-application"><strong>Why image pre-processing really matters in web application</strong></h4>
+
+                    <p>Photographing device improved dramatically in recent years. Not to mention SLR camera, High quality image can be achieved by using mobile device or webcam. In spite of data compression, high resolution images could just mean high disk capacity.  A 120-megapixels image can be larger than 20MB. That would be painful to store such a huge buffer data into database, and that is even worse if web app run on tight resources. Meanwhile, after uploading images, the 'look' of those images may not meet requirements, for example, an user uploaded an 1680x1050 image just for his tiny avatar. All the cases above need us to build a server side middleware to convert an uploaded images to an affordable and usable image.</p>
+
+
+
+                    <h4 id="build-a-simple-node-image-processing-middleware"><strong>Build A Simple Node Image-processing Middleware</strong></h4>
+
+                    <p>In this post, we gonna build a simple node application allowing us to process user uploaded images. This application would have following features:</p>
+
+                    <ol>
+                        <li>Allow user upload multiple images to server through our RESTful API</li>
+                        <li>Resize the uploaded images to 512x512 pixels</li>
+                        <li>Lower the quality of uploaded images to 10% of original quality</li>
+                        <li>Encode the uploaded images to base64 string</li>
+                        <li>Return the base64 string to client side, then allowing user preview their uploaded images</li>
+                    </ol>
+
+                    <p>In this application, we have following dependencies:</p>
+
+                    <ul>
+                        <li><p><a href="https://github.com/petkaantonov/bluebird">bluebird</a> <br>
+                            A promise library, we use it to handle asynchronous call and avoid callback pyramid</p></li>
+                        <li><p><a href="https://github.com/expressjs/body-parser">body-parser</a> <br>
+                            Node.js body parsing middleware </p></li>
+                        <li><p><a href="https://github.com/strongloop/expressjs.com">express</a> <br>
+                            We use express to build our node application</p></li>
+                        <li><p><a href="https://github.com/oliver-moran/jimp">jimp</a> <br>
+                            A lightweight, but powerful image processing library, the most important thing is that it has no dependencies, you can use it without any 3rd party software running on your server</p></li>
+                        <li><p><a href="https://github.com/jquery/jquery">jquery</a> <br>
+                            we use jquery to do the ajax call</p></li>
+                        <li><p><a href="https://github.com/lodash/lodash">lodash</a> <br>
+                            server side utility library</p></li>
+                        <li><p><a href="https://github.com/Dogfalo/materialize">materialize-css</a> <br>
+                            A front-end Google Material Design library, here we use it to make our web page looks more friendly</p></li>
+                        <li><p><a href="https://github.com/expressjs/multer">multer</a> <br>
+                            A Node middleware to handle multipart/form-data, we use it to serialize uploaded images</p>
+
+                            <p>you can copy following json to your <code>package.json</code> file, and run <code>npm install</code> under your app root path:</p></li>
+                    </ul>
+
+<pre class="prettyprint"><code class="language-json hljs "> {
+    "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"upload-img-demo"</span></span>,
+    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0"</span></span>,
+    "<span class="hljs-attribute">main</span>": <span class="hljs-value"><span class="hljs-string">"app.js"</span></span>,
+    "<span class="hljs-attribute">license</span>": <span class="hljs-value"><span class="hljs-string">"MIT"</span></span>,
+    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">bluebird</span>": <span class="hljs-value"><span class="hljs-string">"^2.10.2"</span></span>,
+        "<span class="hljs-attribute">body-parser</span>": <span class="hljs-value"><span class="hljs-string">"^1.14.0"</span></span>,
+        "<span class="hljs-attribute">express</span>": <span class="hljs-value"><span class="hljs-string">"^4.13.3"</span></span>,
+        "<span class="hljs-attribute">file-type</span>": <span class="hljs-value"><span class="hljs-string">"^3.0.0"</span></span>,
+        "<span class="hljs-attribute">jimp</span>": <span class="hljs-value"><span class="hljs-string">"^0.2.8"</span></span>,
+        "<span class="hljs-attribute">jquery</span>": <span class="hljs-value"><span class="hljs-string">"^2.1.4"</span></span>,
+        "<span class="hljs-attribute">lodash</span>": <span class="hljs-value"><span class="hljs-string">"^3.10.1"</span></span>,
+        "<span class="hljs-attribute">materialize-css</span>": <span class="hljs-value"><span class="hljs-string">"^0.97.1"</span></span>,
+        "<span class="hljs-attribute">multer</span>": <span class="hljs-value"><span class="hljs-string">"^1.0.3"</span>
+      </span>}
+</span>}</code></pre>
+
+
+
+                    <h4 id="build-the-app-from-scratch"><strong>Build The App From Scratch</strong></h4>
+
+                    <h5 id="routing"><strong>Routing</strong></h5>
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-pi">'use strict'</span>;
+
+<span class="hljs-keyword">let</span> express= <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)
+    ,multer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'multer'</span>)
+    ,upload = multer()
+    ,app = express()
+
+    <span class="hljs-comment">//Import imgProcessor module which we would implement later</span>
+    ,imgProc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./imgProcessor'</span>);
+
+app.get(<span class="hljs-string">'/'</span>, (req, res, next)=&gt;{
+    res.sendFile(__dirname+<span class="hljs-string">'/main.html'</span>);
+});
+
+app.post(<span class="hljs-string">'/uploadImg'</span>, upload.array(<span class="hljs-string">'pics'</span>), (req, res, next)=&gt;{
+
+    <span class="hljs-comment">//Call the convertImgs method and pass the image files as its argument</span>
+    imgProc.convertImgs(req.files).then((imageStringArray)=&gt;{
+
+        <span class="hljs-comment">//After all image processing finished, send the base64 image string to client</span>
+        res.json(imageStringArray)
+
+    })
+});
+
+app.listen(<span class="hljs-number">8888</span>, ()=&gt;{
+    console.log(<span class="hljs-string">'Hosted on Port 8888'</span>)
+});</code></pre>
+
+                    <p>The server side code is pretty straight-forward, the app listen on port 8888, and it only have two routes, <code>GET:/</code> and <code>POST:/uploadImg</code>, in first route, server send our main page<code>main.html</code> to client,  the latter would response to image uploading request.</p>
+
+                    <p>Notice, in <code>/uploadImg</code> we  use multer middleware <code>upload.array('pics')</code> to parse the uploaded files from POST payload, then we can access those files through <code>req.files</code></p>
+
+                    <h5 id="image-processor"><strong>Image Processor</strong></h5>
+
+                    <p>Now, let's build <code>imgProcessor</code></p>
+
+
+
+<pre class="prettyprint"><code class="language-javascript hljs "><span class="hljs-pi">'use strict'</span>;
+
+<span class="hljs-keyword">let</span> Jimp = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jimp'</span>)
+    ,fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>)
+    ,path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)
+    ,_ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash'</span>)
+    ,Promise = <span class="hljs-built_in">require</span>(<span class="hljs-string">'bluebird'</span>)
+    ,fileType = <span class="hljs-built_in">require</span>(<span class="hljs-string">'file-type'</span>);
+
+module.exports = {
+    convertImgs(files){
+
+        <span class="hljs-keyword">let</span> promises = [];
+
+        _.forEach(files, (file)=&gt;{
+
+            <span class="hljs-comment">//Create a new promise for each image processing</span>
+            <span class="hljs-keyword">let</span> promise = <span class="hljs-keyword">new</span> Promise((resolve, reject)=&gt;{
+
+            <span class="hljs-comment">//Resolve image file type</span>
+            <span class="hljs-keyword">let</span> type = fileType(file.buffer);
+
+            <span class="hljs-comment">//Create a jimp instance for this image</span>
+            <span class="hljs-keyword">new</span> Jimp(file.buffer, (err, image)=&gt;{
+
+                <span class="hljs-comment">//Resize this image</span>
+                image.resize(<span class="hljs-number">512</span>, <span class="hljs-number">512</span>)
+                    <span class="hljs-comment">//lower the quality by 90%</span>
+                    .quality(<span class="hljs-number">10</span>)
+                    .getBuffer(type.mime, (err, buffer)=&gt;{
+                        <span class="hljs-comment">//Transfer image file buffer to base64 string</span>
+                        <span class="hljs-keyword">let</span> base64Image = buffer.toString(<span class="hljs-string">'base64'</span>);
+                        <span class="hljs-keyword">let</span> imgSrcString = <span class="hljs-string">"data:"</span> + type.mime + <span class="hljs-string">';base64, '</span> + base64Image;
+                        <span class="hljs-comment">//Resolve base94 string</span>
+                        resolve(imgSrcString);
+                    });
+                })
+            });
+
+            promises.push(promise);
+        });
+
+        <span class="hljs-comment">//Return promise array</span>
+        <span class="hljs-keyword">return</span> Promise.all(promises);
+    }
+};</code></pre>
+
+                    <p>ImgProcessor only have one method <code>convertImgs</code>, this method basically doing three things:</p>
+
+                    <ol>
+                        <li>Create a promise for each image processing period, and push it to a promise array</li>
+                        <li>Create a JIMP instance for each image, and resize and lower quality of the image by calling JIMP API</li>
+                        <li>Transfer image file buffer data to base64 string format and resolve the string</li>
+                    </ol>
+
+                    <p>After calling this method on a image, a related low-quality and shrinking image would be produced.</p>
+
+                    <h5 id="view"><strong>View</strong></h5>
+
+                    <p>The last thing left is to build our main page</p>
+
+
+
+<pre class="prettyprint"><code class="language-html hljs "><span class="hljs-tag">&lt;<span class="hljs-title">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">title</span>&gt;</span>Upload Image Demo<span class="hljs-tag">&lt;/<span class="hljs-title">title</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"node_modules/jquery/dist/jquery.min.js"</span>&gt;</span><span class="javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"node_modules/materialize-css/dist/js/materialize.min.js"</span>&gt;</span><span class="javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"node_modules/materialize-css/dist/css/materialize.min.css"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">body</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"container"</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"row"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">form</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"form1"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"col m4 offset-m4"</span> <span class="hljs-attribute">action</span>=<span class="hljs-value">"/uploadImg"</span> <span class="hljs-attribute">enctype</span>=<span class="hljs-value">"multipart/form-data"</span> <span class="hljs-attribute">method</span>=<span class="hljs-value">"post"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"file-field input-field"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"btn"</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">span</span>&gt;</span>File<span class="hljs-tag">&lt;/<span class="hljs-title">span</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"file"</span> <span class="hljs-attribute">multiple</span>=<span class="hljs-value">""</span> <span class="hljs-attribute">accept</span>=<span class="hljs-value">"image/jpeg,png"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"pics"</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"file-path-wrapper"</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"file-path validate"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">placeholder</span>=<span class="hljs-value">"Upload one or more files"</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"input-field"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">button</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"submit"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"waves-effect waves-light btn"</span>&gt;</span>Submit<span class="hljs-tag">&lt;/<span class="hljs-title">button</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"progress"</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">"display:none"</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"indeterminate"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">form</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"row img-preview"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">script</span>&gt;</span><span class="javascript">
+        $(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+            $(<span class="hljs-string">'#form1'</span>).on(<span class="hljs-string">'submit'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span>{</span>
+                event.preventDefault();
+
+                <span class="hljs-keyword">var</span> data = <span class="hljs-keyword">new</span> FormData(<span class="hljs-keyword">this</span>);
+
+                data.append( <span class="hljs-string">'pics'</span>, $(<span class="hljs-string">'input[name="pics"]'</span>)[<span class="hljs-number">0</span>].files);
+
+                $(<span class="hljs-string">'.progress'</span>).css({
+                    display:<span class="hljs-string">'block'</span>
+                });
+
+                $.ajax({
+                    type:<span class="hljs-string">'POST'</span>,
+                    url: $(<span class="hljs-keyword">this</span>).attr(<span class="hljs-string">'action'</span>),
+                    data:data,
+                    cache:<span class="hljs-literal">false</span>,
+                    contentType: <span class="hljs-literal">false</span>,
+                    processData: <span class="hljs-literal">false</span>,
+                    success:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span>{</span>
+
+                        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>;i&lt;data.length;i++){
+                            <span class="hljs-keyword">var</span> template =
+                                <span class="hljs-string">'&lt;div class="col m4"&gt;&lt;div class="card"&gt;&lt;div class="card-image"&gt;&lt;img src="'</span>
+                                + data[i] + <span class="hljs-string">'"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'</span>;
+
+                                $(<span class="hljs-string">'.img-preview'</span>).append(template);
+                        }
+
+                        $(<span class="hljs-string">'.progress'</span>).css({
+                            display:<span class="hljs-string">'none'</span>
+                        });
+                    },
+                    error: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span>{</span>
+                        $(<span class="hljs-string">'.progress'</span>).css({
+                            display:<span class="hljs-string">'none'</span>
+                        });
+                    }
+                });
+
+            })
+        })
+    </span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+
+
+<span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">html</span>&gt;</span></code></pre>
+
+                    <p>In order to enable multer middleware on form posting data, in form element, we set <code>enctype</code> attribute to <code>multipart/formdata</code>, and set input element <code>type</code> to <code>file</code>, <code>name</code> to <code>pics</code>, then we prevent the default submit event, and do AJAX call using jQuery. We use HTML5 <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData">FormData</a> to build our POST payload. And on success callback, we create <code>&lt;img&gt;</code> element for each returned image base64 string, and append it to <code>&lt;body&gt;</code> as a picture preview. We also add preloader element <code>&lt;div class="progress"&gt;</code> to indicate user that image is under processing.</p>
+
+                    <h4 id="performance"><strong>Performance</strong></h4>
+
+                    <p><a href="https://en.wikipedia.org/wiki/Image_processing">Image Processing</a> could be a time consumed job, many algorithms and theories out there try to speed up this process, at this point, we won't drill down to algorithm, we just want to make sure our end user could be notified during image processing, loader icon or progress bar both are great idea to be added on the page.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var disqus_shortname = 'markocenBlog';
+    var disqus_identifier = '/pre-processing-uploaded-image-on-nodejs';
+    var disqus_url = 'http://markocen.github.com/blog/pre-processing-uploaded-image-on-nodejs.html';
+    var disqus_title = "Pre-processing Uploaded Images on Nodejs";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+</body>
+</html>
