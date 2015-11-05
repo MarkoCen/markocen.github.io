@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="card-action">
-                    <a href="{{repo.homepage}}">Homepage</a>
+                    <a href="{{repo.homepage}}" *ng-if="repo.homepage != ''">Homepage</a>
                     <a href="{{repo.html_url}}">Github</a>
                 </div>
             </div>
