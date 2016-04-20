@@ -1,0 +1,40 @@
+<div class="progress grey lighten-3" *ng-if="showProgressBar">
+    <div class="indeterminate grey lighten-1"></div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col s12 center-align">
+            <img class="logo" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
+        </div>
+        <div class="input-field col s6 offset-s3">
+            <input id="search_input" placeholder="Search Repository Hosted on GitHub" type="text" class="validate" [(ng-model)]="searchStr" (keyup)="searchInput()">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6 m4" *ng-for="#repo of repos">
+            <div class="card hoverable">
+                <div class="card-content">
+                    <div class="card-title black-text">
+                        {{repo.name}}
+                        <div class="chip right">
+                            <img src="{{repo.owner.avatar_url}}" alt="Contact Person">
+                            {{repo.owner.login}}
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="light-blue-text text-darken-3">{{repo.watchers}} Stars</span>
+                        <span class="orange-text text-darken-3">{{repo.forks}} Forks</span>
+                    </div>
+                    <div class="repo-description">
+                        {{repo.description}}
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="{{repo.homepage}}" *ng-if="repo.homepage != ''">Homepage</a>
+                    <a href="{{repo.html_url}}">Github</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
