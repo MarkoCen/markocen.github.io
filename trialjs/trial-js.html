@@ -98,12 +98,12 @@
         <h4>* 2kb gzipped</h4>
         <h4>* Auto extends methods for jQuery and Zepto</h4><br>
         <h3><a href="https://github.com/MarkoCen/trial-js#apis">APIs</a></h3>
-        <h3><a href="#usage">Usage</a></h3>
-        <h3><a href="#example">Examples</a></h3>
+        <h3><a onclick="navTo('#usage')">Usage</a></h3>
+        <h3><a href="navTo('#example')">Examples</a></h3>
     </div>
 
     <div class="col-lg-8 col-lg-offset-2">
-        <h2><a href="#usage">#</a>Usage:</h2>
+        <h2 id="#usage">Usage:</h2>
         <pre>
             <code>
                 npm install trial-js -S
@@ -142,7 +142,7 @@
     </div>
 
     <div class="col-lg-8 col-lg-offset-2">
-        <h2><a href="#example">#</a>Examples:</h2>
+        <h2 id="#example">Examples:</h2>
         <h3>Dynamically changing styles based on the distance between pointer and element</h3>
     </div>
 
@@ -254,6 +254,11 @@
                                 })
                             }
                     )
+            
+            window.navTo = function(tag){
+                var ele = $(tag);
+                $('html,body').animate({scrollTop: ele.offset().top});
+            }
         });
 
     </script>
