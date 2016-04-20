@@ -111,13 +111,8 @@
                 &lt;script src="node_modules/trial-js/trial.min.js"&gt;&lt;/script&gt;
             </code>
             <code>
-                //if you are using webpack, you can load trial-js by script/exports loaders
-                loaders: [
-                    {
-                        test: require.resolve('trial-js/trial.min.js'),
-                        loader: 'exports?window.Trial!script'
-                    }
-                ]
+                //if you are using webpack, you can load trial-js by script loaders
+                require('script!trial-js')
             </code>
             <code>
                 //call a function when mouse enter elements' monitoring area
