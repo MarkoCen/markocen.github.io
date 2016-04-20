@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/github.min.css" />
+    <script src="https://code.jquery.com/jquery-2.2.3.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+    <script src="https://raw.githubusercontent.com/MarkoCen/trial-js/master/trial.min.js?token=AH6yqu7ywJ2mSPXj7TWXFtYDUloEpjubks5XIAKvwA%3D%3D"></script>
+    <style>
+        .row > div{
+            margin-bottom: 10px;
+        }
+        .example{
+            overflow: hidden;
+            padding-top: 40px;
+            padding-bottom: 60px;
+            text-align: center;
+        }
+
+        .example .input-wrapper{
+            position: relative;
+            text-align: center;
+            padding-top: 40px;
+            height: 400px;
+        }
+
+        .example .input-wrapper .indicator{
+            position: absolute;
+            top: 0;
+            left: calc(50% - 150px);
+            height: 300px;
+            width: 300px;
+            border: 5px dashed red;
+            border-radius: 100%;
+        }
+
+        .block{
+            margin:5px;
+            width:120px;
+            height:120px;
+            opacity:0;
+            border-radius: 100%;
+            -webkit-transition: all 100ms;
+            -moz-transition: all 100ms;
+            -ms-transition: all 100ms;
+            -o-transition: all 100ms;
+            transition: all 100ms;
+        }
+
+        pre{
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0;
+        }
+
+
+
+        .btn{
+            margin-top: 80px;
+        }
+
+        .color-one{
+            background-color: #3366cc;
+        }
+        .color-two{
+            background-color: #33cccc;
+        }
+        .color-three{
+            background-color: #66ffcc;
+        }
+        .color-four{
+            background-color: #6699cc;
+        }
+        .color-five{
+            background-color: #6633cc;
+        }
+        .color-six{
+            background-color: #ff00cc;
+        }
+        .color-seven{
+            background-color: #ff66cc;
+        }
+        .color-eight{
+            background-color: #ffcccc;
+        }
+    </style>
+</head>
+<body class="container-fluid row">
+
+    <div class="col-lg-8 col-lg-offset-2">
+        <h1>Trial.js</h1>
+        <h4>simple library to monitoring mouse position and predicting user input</h4><br>
+        <h4>* No dependency</h4>
+        <h4>* 2kb gzipped</h4>
+        <h4>* Auto extends methods for jQuery and Zepto</h4><br>
+        <h3><a href="https://github.com/MarkoCen/trial-js#apis">APIs</a></h3>
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+        <h2>Usage:</h2>
+        <pre>
+            <code>
+                npm install trial-js -S
+            </code>
+            <code>
+                &lt;!--include Trial.js, then you ready to go!--&gt;
+                &lt;script src="node_modules/trial-js/trial.min.js"&gt;&lt;/script&gt;
+            </code>
+            <code>
+                //if you are using webpack, you can load trial-js by script/exports loaders
+                loaders: [
+                    {
+                        test: require.resolve('trial-js/trial.min.js'),
+                        loader: 'exports?window.Trial!script'
+                    }
+                ]
+            </code>
+            <code>
+                //call a function when mouse enter elements' monitoring area
+                Trial(selector).enter(
+                    { distance: 100, cord: 'center'},
+                    function(distance, ele, event){
+
+                        //do something...
+
+                    )
+                );
+            </code>
+            <code>
+                //if you are using jQuery or Zepto, Trial extends $.fn automatically
+                $(selector).enter(
+                    { distance: 100, cord: 'center'},
+                    function(distance, ele, event){
+
+                        //do something...
+
+                    )
+                );
+            </code>
+        </pre>
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+        <h2>Examples:</h2>
+        <h3>Dynamically changing styles based on the distance between pointer and element</h3>
+    </div>
+
+    <div class="example col-lg-8 col-lg-offset-2">
+        <div class="block color-one col-sm-1"></div>
+        <div class="block color-two col-sm-1"></div>
+        <div class="block color-three col-sm-1"></div>
+        <div class="block color-four col-sm-1"></div>
+        <div class="block color-five col-sm-1"></div>
+        <div class="block color-six col-sm-1"></div>
+        <div class="block color-seven col-sm-1"></div>
+        <div class="block color-one col-sm-1"></div>
+        <div class="block color-two col-sm-1"></div>
+        <div class="block color-three col-sm-1"></div>
+        <div class="block color-four col-sm-1"></div>
+        <div class="block color-five col-sm-1"></div>
+        <div class="block color-six col-sm-1"></div>
+        <div class="block color-seven col-sm-1"></div>
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+
+        <pre>
+            <code class="javascript">
+                Trial(".block")
+                    .within(
+                        {distance: 500, cord: 'center'},
+                        function(distance, ele, event){
+                            ele.style.opacity = (500 - distance) / 500;
+                            ele.style.transform = 'scale(' + (500 - distance) / 500 + ')';
+                        }
+                    )
+                    .leave(
+                        {distance: 500, cord: 'center'},
+                        function (distance, ele, event) {
+                            ele.style.opacity = 0;
+                        }
+                    )
+            </code>
+        </pre>
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+        <h3>Pre-fetching data before receiving user input</h3>
+        <h4><i>when mouse enter the red circle, pre-fetching details before user click the button</i></h4>
+    </div>
+
+    <div class="example api-result col-lg-8 col-lg-offset-2">
+        <div class="input-wrapper">
+            <button class="btn btn-info btn-lg">View Details...</button>
+            <div class="indicator"></div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+
+        <pre>
+            <code class="javascript">
+                Trial(".btn")
+                    .enter(
+                        {distance: 150, cord: 'center'},
+                        function(distance, ele, event){
+                            fetch(url).then(function(data){
+
+                                //do something ...
+
+                            })
+                        }
+                    )
+            </code>
+        </pre>
+    </div>
+
+    <div class="col-lg-8 col-lg-offset-2">
+
+    </div>
+
+    <a href="https://github.com/MarkoCen/trial-js">
+        <img style="position: absolute; top: 0; right: 0; border: 0;"
+             src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+             alt="Fork me on GitHub"
+             data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png">
+    </a>
+
+    <script>
+        $(function(){
+            hljs.initHighlightingOnLoad();
+            Trial('.block')
+                    .within({distance: 500, cord: 'center'}, function(distance, ele, event){
+                        ele.style.opacity = (500 - distance) / 500;
+                        ele.style.transform = 'scale(' + (500 - distance) / 500 + ')';
+                    })
+                    .leave({distance: 500, cord: 'center'}, function (distance, ele, event) {
+                        ele.style.opacity = 0;
+                    });
+            Trial(".btn")
+                    .enter(
+                            {distance: 150, cord: 'center'},
+                            function(distance, ele, event){
+                                $.ajax({
+                                    url: 'http://jsonplaceholder.typicode.com/posts/1',
+                                    method: 'GET'
+                                }).then(function (data) {
+                                    $('.api-result').append(
+                                        '<div class="col-lg-10 col-lg-offset-1 alert alert-success">' +
+                                        '<h4>Details: ' + JSON.stringify(data.title) + '</h4></div>'
+                                    );
+                                })
+                            }
+                    )
+        });
+
+    </script>
+</body>
+</html>
